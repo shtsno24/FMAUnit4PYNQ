@@ -1,3 +1,19 @@
+/*
+   Copyright 2022 shts
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 #include "FMA.hpp"
 
 void fma_fpga(hls::stream<axi_stream_type> &w_axi_0,
@@ -5,30 +21,21 @@ void fma_fpga(hls::stream<axi_stream_type> &w_axi_0,
               hls::stream<axi_stream_type> &b_axi_2,
               hls::stream<axi_stream_type> &y_axi_3,
               uint32_t loop_count){
-// void fma_fpga(hls::stream<axi_stream_type> &w_axi_0,
-//               hls::stream<axi_stream_type> &x_axi_1,
-//               hls::stream<axi_stream_type> &b_axi_2,
-//               hls::stream<axi_stream_type> &y_axi_3){
 #pragma HLS INTERFACE axis register both port=w_axi_0
 #pragma HLS INTERFACE axis register both port=x_axi_1
 #pragma HLS INTERFACE axis register both port=b_axi_2
 #pragma HLS INTERFACE axis register both port=y_axi_3
 #pragma HLS INTERFACE s_axilite port=loop_count bundle=ctrl
 #pragma HLS INTERFACE s_axilite register port=return bundle=ctrl
-// #pragma HLS INTERFACE ap_ctrl_none port=return
 
     data_type w_vec[field_length];
     data_type x_vec[field_length];
     data_type b_vec[field_length];
     data_type y_vec[field_length];
 #pragma HLS array_partition variable=w_vec complete dim=0
-// #pragma HLS dependence variable=w_vec inter false
 #pragma HLS array_partition variable=x_vec complete dim=0
-// #pragma HLS dependence variable=x_vec inter false
 #pragma HLS array_partition variable=b_vec complete dim=0
-// #pragma HLS dependence variable=b_vec inter false
 #pragma HLS array_partition variable=y_vec complete dim=0
-// #pragma HLS dependence variable=y_vec inter false
 
 	axi_stream_type axi_buff_w, axi_buff_x, axi_buff_b, axi_buff_y;
 
@@ -57,8 +64,6 @@ void fma_fpga(hls::stream<axi_stream_type> &w_axi_0,
         axi_buff_y.data = bus_buffer_y[0];
         axi_buff_y.user = (i == 0);
         axi_buff_y.last = (i == loop_count - 1);
-        // axi_buff_y.user = axi_buff_w.user;
-        // axi_buff_y.last = axi_buff_w.last;
         axi_buff_y.keep = -1; // enable all bytes, see https://www.xilinx.com/html_docs/xilinx2020_2/vitis_doc/managing_interface_synthesis.html#tlb1539734222626
         axi_buff_y.strb = -1;
         axi_buff_y.id = 0;
